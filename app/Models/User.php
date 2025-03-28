@@ -72,4 +72,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Expense::class);
     }
+    public function savings()
+    {
+        return $this->hasMany(Saving::class);
+    }
+       public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

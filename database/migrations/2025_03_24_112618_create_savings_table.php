@@ -14,6 +14,12 @@ return new class extends Migration
         Schema::create('savings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('saving_type', ['Home','Car','Project','invesnment','traveling','Wedding','Education','Other..']);
+            $table->string('saving_name')->nullable();
+            $table->double('saving_amount')->default(0.00);
+            $table->double('saving_total')->default(0.00);
+
+
             $table->timestamps();
         });
     }

@@ -38,5 +38,26 @@ class FinancialController extends Controller
         return response()->json($data);
     }
 
-    
+
+    public function getExpensesPercentage()
+    {
+        // استرجاع إجمالي المصروفات
+        $totalExpenses = Expense::sum('expenses_amount');
+
+        // جلب المصروفات مجمّعة حسب الفئة
+        $categories = Expense::selectRaw('category, SUM(expenses_amount) as total')
+            ->groupBy('category')
+            ->get();
+
+        // حساب النسب لكل فئة
+        $data = $categories->map(function ($item) use ($totalExpenses) {
+            return [
+                'category' => $item->category,
+                'percentage' => round(($item->total / $totalExpenses) * 100, 2)
+            ];
+        });
+
+        return response()->json($data);
+    }
+
 }

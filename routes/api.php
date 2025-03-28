@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\SavingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
@@ -37,7 +38,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
     // Net balance
     Route::get('/account/balance', [ExpenseController::class, 'getNetBalance']);
-    // Add expenses, Predefined subcategories or manually
+
+
+    /**
+    *   Add expenses, Predefined subcategories or manually.
+    *   Show each expenses Category.
+    *   Delete expenses by id.
+    */
     Route::post('/expenses', [ExpenseController::class, 'store']);
     Route::get('/expenses/categories/{category}/subcategories', [ExpenseController::class, 'getSubcategories']);
     Route::get('/expenses/needs', [ExpenseController::class, 'getNeeds']);
@@ -46,19 +53,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/expenses/taxes', [ExpenseController::class, 'getTaxes']);
     Route::delete('/expenses/{id}', [ExpenseController::class, 'deleteExpenseById']);
 
+    /**
+    *  Savings; add, show, edit and delete goals.
+    */
+    Route::delete('/expenses/{id}', [SavingController::class, 'deleteSavingsById']);
+
     // financial report
     Route::get('/bar-chart', [FinancialController::class, 'getFinancialReport']);
+    Route::get('/pie-chart', [FinancialController::class, 'getExpensesPercentage']);
+
+    /**
+    * Notification.
+    */
 
 });
-
-
-
-
-/**
- * Notification.
- */
-Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
-Route::get('/notifications/{userId}', [NotificationController::class, 'getUserNotifications']);
-Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
-

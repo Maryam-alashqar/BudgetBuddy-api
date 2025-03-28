@@ -16,6 +16,7 @@ class Job extends Model
         'job_sector',
         'job_title',
         'job_position',
+        'created_at'
     ];
 
 

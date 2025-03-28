@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Saving;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Saving;
+use App\Models\Job;
 
 class SavingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getGoals()
     {
         //
     }
@@ -18,48 +20,22 @@ class SavingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function addGoals(Request $request)
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Saving $saving)
+     protected function deleteSavingsById($savingId)
     {
-        //
-    }
+        $saving = Saving::find($savingId);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Saving $saving)
-    {
-        //
-    }
+        if (!$saving) {
+            return response()->json(['message' => 'Goal not found'], 404);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Saving $saving)
-    {
-        //
-    }
+        $saving->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Saving $saving)
-    {
-        //
+        return response()->json(['message' => 'Goal deleted successfully'], 200);
     }
 }

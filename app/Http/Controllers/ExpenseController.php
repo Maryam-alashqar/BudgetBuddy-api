@@ -20,6 +20,7 @@ class ExpenseController extends Controller
         'want' => ['Dining_out', 'Entertainment', 'Hobbies', 'Travel', 'Subscriptions']
     ];
 
+
     /**
      * Store a new expense
      */
@@ -69,13 +70,39 @@ class ExpenseController extends Controller
 
             // Update records with the new total
             $user->expenses()->update(['expenses_total' => $newTotal]);
+             // Check if user has an expense limit set
+            if ($user->expense_limit) {
+                $percentage = ($newTotal / $user->expense_limit) * 100;
+
+                // Check if reached or exceeded 80%
+                if ($percentage >= 80) {
+                    // Check if we haven't already notified for this threshold
+                    $alreadyNotified = Notification::where('user_id', $user->id)
+                        ->where('type', 'expense_limit')
+                        ->where('created_at', '>=', now()->subDay())
+                        ->exists();
+                }
+                if (!$alreadyNotified) {
+                    Notification::create([
+                            'user_id' => $user->id,
+                            'type' => 'expense_limit',
+                            'message' => "Your expenses have reached {$percentage}% of your limit!"
+                        ]);
+                    }
+                        // Optional: Send push notification
+                        $this->sendExpenseLimitNotification($user, $percentage);
+          }
+
         });
+
 
         return response()->json([
             'status' => 'success',
             'message' => 'Expense added successfully'
         ], 201);
-    }
+
+        }
+
 
 
      /**
@@ -198,29 +225,7 @@ class ExpenseController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Expense $expense)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Expense $expense)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Expense $expense)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
