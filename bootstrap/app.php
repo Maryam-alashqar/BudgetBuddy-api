@@ -28,4 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
+    $app->booted(function () {
+        \Illuminate\Support\Facades\Schedule::command('check:salary-reminder')->dailyAt('08:00');
+    });
 

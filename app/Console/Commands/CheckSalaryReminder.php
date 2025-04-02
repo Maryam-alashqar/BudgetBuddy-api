@@ -3,7 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Job;
+use App\Models\User;
+use App\Notifications\SalaryTimeNotification;
+use Illuminate\Support\Facades\Notification;
+
+
 class CheckSalaryReminder extends Command
 {
     /**
@@ -12,33 +16,28 @@ class CheckSalaryReminder extends Command
      * @var string
      */
     protected $signature = 'check:salary-reminder';
+
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'User payday time';
+    protected $description = 'Send salary reminder notifications to users whose payday is today';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        //
-        // Get users who should receive salary today
-    $users = Job::whereDay('created_at', now()->day)->get();
+        // جلب المستخدمين الذين يجب أن يستلموا الراتب اليوم
+        $users = User::whereDay('created_at', now()->day)->get();
 
-    foreach ($users as $user) {
-        Notification::create([
-            'user_id' => $user->id,
-            'type' => 'salary_reminder',
-            'message' => 'It\'s time to get your salary!'
-        ]);
+        foreach ($users as $user) {
+            // إرسال إشعار داخل التطبيق
+            $user->notify(new SalaryTimeNotification());
+            // يمكنك هنا إضافة إشعار Firebase Cloud Messaging (FCM) إذا كنت تستخدمه
+        }
 
-        // Here you might also want to trigger a push notification
-        // via Firebase Cloud Messaging or your preferred service
-    }
-
-    $this->info('Salary reminders processed.');
+        $this->info('Salary reminder sent successfully.');
     }
 }

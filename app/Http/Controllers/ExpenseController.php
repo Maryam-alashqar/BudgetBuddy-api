@@ -11,97 +11,67 @@ use App\Models\Expense;
 
 class ExpenseController extends Controller
 {
-    // Predefined subcategories for each category
-    private $Subcategories = [
-        'primary_bill' => ['Electricity bill', 'Gas bill', 'Water bill',
-        'Internet Subscription', 'Phone', 'rent', 'mortgage'],
-        'tax' => ['Income_tax', 'Property_tax', 'Sales_tax', 'Vehicle_tax'],
-        'need' => ['Groceries', 'Healthcare', 'Transportation', 'Education', 'Insurance'],
-        'want' => ['Dining_out', 'Entertainment', 'Hobbies', 'Travel', 'Subscriptions']
-    ];
-
 
     /**
      * Store a new expense
      */
+   public function store(Request $request)
+{
+    $user = Auth::user();
 
+    $validatedData = $request->validate([
+        'category' => 'required|string|max:255',
+        'expenses_name' => 'nullable|string|max:255',
+        'Deadline' => 'nullable|date',
+        'expenses_amount' => 'required|numeric|min:0.01',
+    ]);
 
-    public function store(Request $request)
-    {
-        $user = Auth::user();
+    // تنفيذ عملية ضمن المعاملة لضمان تناسق البيانات
+    DB::transaction(function () use ($user, $validatedData) {
 
-        $validatedData = $request->validate([
-            'category' => [
-                'required',
-                Rule::in(array_keys($this->Subcategories))
-            ],
-            'subcategory' => 'required|string|max:255',
-            'expenses_name' => 'nullable|string|max:255',
-            'expenses_amount' => 'required|numeric|min:0.01',
-            'is_custom' => 'sometimes|boolean'
+        $expense = $user->expenses()->create([
+            'category' => $validatedData['category'],
+            'Deadline' => $validatedData['Deadline'] ?? null,
+            'expenses_name' => $validatedData['expenses_name'] ?? null,
+            'expenses_amount' => $validatedData['expenses_amount'],
         ]);
 
-        $isCustom = $request->input('is_custom', false);
+        // حساب مجموع المصاريف الجديدة
+        $newTotal = $user->expenses()->sum('expenses_amount');
 
-        if (!$isCustom) {
-            $subcategories = array_map('strtolower', $this->Subcategories[$validatedData['category']]);
-            if (!in_array(strtolower($validatedData['subcategory']), $subcategories)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Invalid subcategory for selected category',
-                    'valid_subcategories' => $this->Subcategories[$validatedData['category']]
-                ], 422);
-            }
-        }
+        // تحديث جميع السجلات بالقيمة الجديدة
+        $user->expenses()->update(['expenses_total' => $newTotal]);
 
-        // database transaction to ensure data consistency
-        DB::transaction(function () use ($user, $validatedData, $isCustom) {
+        // التحقق مما إذا كان هناك حد للنفقات
+        if ($user->expense_limit) {
+            $percentage = ($newTotal / $user->expense_limit) * 100;
 
-            $expense = $user->expenses()->create([
-                'category' => $validatedData['category'],
-                'subcategory' => $validatedData['subcategory'],
-                'expenses_name' => $validatedData['expenses_name'] ?? null,
-                'expenses_amount' => $validatedData['expenses_amount'],
-                'is_custom_subcategory' => $isCustom
-            ]);
+            // التحقق مما إذا كان قد تجاوز 80%
+            if ($percentage >= 80) {
+                $alreadyNotified = Notification::where('user_id', $user->id)
+                    ->where('type', 'expense_limit')
+                    ->where('created_at', '>=', now()->subDay())
+                    ->exists();
 
-            // Calculate total for all user's expenses
-            $newTotal = $user->expenses()->sum('expenses_amount');
-
-            // Update records with the new total
-            $user->expenses()->update(['expenses_total' => $newTotal]);
-             // Check if user has an expense limit set
-            if ($user->expense_limit) {
-                $percentage = ($newTotal / $user->expense_limit) * 100;
-
-                // Check if reached or exceeded 80%
-                if ($percentage >= 80) {
-                    // Check if we haven't already notified for this threshold
-                    $alreadyNotified = Notification::where('user_id', $user->id)
-                        ->where('type', 'expense_limit')
-                        ->where('created_at', '>=', now()->subDay())
-                        ->exists();
-                }
                 if (!$alreadyNotified) {
                     Notification::create([
-                            'user_id' => $user->id,
-                            'type' => 'expense_limit',
-                            'message' => "Your expenses have reached {$percentage}% of your limit!"
-                        ]);
-                    }
-                        // Optional: Send push notification
-                        $this->sendExpenseLimitNotification($user, $percentage);
-          }
+                        'user_id' => $user->id,
+                        'type' => 'expense_limit',
+                        'message' => "Your expenses have reached {$percentage}% of your limit!"
+                    ]);
 
-        });
-
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Expense added successfully'
-        ], 201);
-
+                    // إرسال إشعار دفع (إن كان مفعلاً)
+                    $user->notify(new ExpenseLimitReached($percentage));
+                }
+            }
         }
+    });
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Expense added successfully'
+    ], 201);
+}
 
 
 
@@ -134,7 +104,7 @@ class ExpenseController extends Controller
     {
         $user = Auth::user();
         try {
-            // Calculate total income from all sources
+            // Calculate total income
             $totalIncome = $user->jobs()->sum('salary_amount');
             // Calculate total expenses
             $totalExpenses = $user->expenses()->sum('expenses_amount');

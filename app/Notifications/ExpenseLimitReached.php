@@ -6,19 +6,21 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 
-class SalaryTimeNotification extends Notification
+class ExpenseLimitReached extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-     public function via($notifiable)
+
+     protected $percentage;
+
+    public function __construct($percentage)
     {
-        return ['database', 'broadcast']; // Save in DB and send via WebSockets
+        $this->percentage = $percentage;
     }
 
     /**
@@ -26,15 +28,15 @@ class SalaryTimeNotification extends Notification
      *
      * @return array<int, string>
      */
-/*     public function via(object $notifiable): array
+    public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-/*     public function toMail(object $notifiable): MailMessage
+    /* public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
             ->line('The introduction to the notification.')
@@ -47,13 +49,18 @@ class SalaryTimeNotification extends Notification
      *
      * @return array<string, mixed>
      */
-     public function toDatabase($notifiable)
+
+    public function toDatabase($notifiable)
     {
-          return [
-        'title' => 'Salary Reminder',
-        'message' => 'It\'s your Payday!! <br> Time to collect your salary!',
-    ];
+        return [
+            'message' => "Your expenses have reached {$this->percentage}% of your limit!",
+        ];
     }
-
-
+    
+    public function toArray(object $notifiable): array
+    {
+        return [
+            //
+        ];
+    }
 }

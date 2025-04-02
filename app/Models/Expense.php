@@ -14,8 +14,7 @@ class Expense extends Model
     protected $fillable = [
         'user_id',
         'category',
-        'subcategory',
-        'is_custom_subcategory',
+        'Deadline',
         'expenses_name',
         'expenses_amount',
         'expenses_total'

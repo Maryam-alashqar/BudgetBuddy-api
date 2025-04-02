@@ -28,7 +28,7 @@ class ForgotPasswordController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', strtolower($request->email))->first();
 
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
@@ -40,8 +40,7 @@ class ForgotPasswordController extends Controller
         $user->otp_expires_at = Carbon::now()->addMinutes(10); // OTP expires in 10 minutes
         $user->save();
 
-        // Log OTP to check if it's generated
-         Log::info("OTP for {$user->email}: $otp");
+
 
         // Send OTP via email
         Mail::raw("Your OTP for password reset is: $otp", function ($message) use ($user) {

@@ -13,10 +13,11 @@ class Saving extends Model
 
     protected $fillable = [
         'user_id',
-        'saving_type',
-        'saving_name',
+        'saving_goal',
+        'start_date',
+        'end_date',
         'saving_amount',
+        'note',
         'saving_total',
-        'created_at'
     ];
 }

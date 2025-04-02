@@ -14,11 +14,10 @@ return new class extends Migration
        Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->enum('category', ['need', 'want', 'primary_bill','tax']);
-            $table->string('subcategory');
-            $table->boolean('is_custom_subcategory')->default(false);
-            $table->string('expenses_name')->nullable();
+            $table->enum('category', ['need', 'want', 'primary_bill','tax'])->comment('Select expenses type');
+            $table->string('expenses_name')->nullable()->comment('e.g. Flat rent, Electricity bill.. etc.');
             $table->double('expenses_amount')->default(0.00);
+            $table->date('Deadline')->nullable();
             $table->double('expenses_total')->default(0.00);
             $table->timestamps();
         });
