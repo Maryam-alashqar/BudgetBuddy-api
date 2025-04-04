@@ -24,21 +24,21 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
-        'salary_type',
+        'role',
         'otp',
         'otp_expires_at',
         'device_token'
     ];
-    // Accessor: Convert boolean to 'fixed' or 'irregular' when retrieved
-    public function getSalaryTypeAttribute($value)
+
+
+    public function isFixedIncome()
     {
-        return $value ? 'fixed' : 'irregular';
+        return $this->role === 'fixed_income';
     }
 
-    // Mutator: Convert 'fixed' or 'irregular' to boolean when stored
-    public function setSalaryTypeAttribute($value)
+    public function isIrregularIncome()
     {
-        $this->attributes['salary_type'] = ($value === 'fixed') ? 1 : 0;
+        return $this->role === 'irregular_income';
     }
 
     /**
@@ -79,5 +79,10 @@ class User extends Authenticatable
        public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function bonuses(): HasMany
+    {
+        return $this->hasMany(Bonus::class, 'user_id')->where('role', 'fixed_income');
     }
 }

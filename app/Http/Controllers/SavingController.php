@@ -16,7 +16,7 @@ class SavingController extends Controller
      */
     public function addGoals(Request $request)
     {
-        //
+
         $request->validate([
         'user_id' => 'required|exists:users,id',
         'saving_goal' => 'required|string|max:255|',

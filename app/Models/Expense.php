@@ -14,7 +14,7 @@ class Expense extends Model
     protected $fillable = [
         'user_id',
         'category',
-        'Deadline',
+        'deadline',
         'expenses_name',
         'expenses_amount',
         'expenses_total'

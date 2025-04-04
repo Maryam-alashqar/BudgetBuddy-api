@@ -11,7 +11,7 @@ use App\Models\Job;
 
 class ProfileController extends Controller
 {
-  
+
 
     /**
      * Store a newly created resource in storage.
@@ -48,7 +48,8 @@ class ProfileController extends Controller
     public function update(Request $request, $userId)
 {
     $user = User::with('jobs')->findOrFail($userId);
-// Get the first job (assuming one job per user, update for multiple jobs if needed)
+
+    // Get the first job (assuming one job per user, update for multiple jobs if needed)
     $job = $user->jobs()->first();
 
     // Pre-fill missing request data with existing values

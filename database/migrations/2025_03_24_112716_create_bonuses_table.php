@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-          Schema::create('performance_incentives', function (Blueprint $table) {
+          Schema::create('bonuses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('fixed_user_id')->constrained('fixed_users')->onDelete('cascade');
-            $table->double('performance_amount')->nullable();
-            $table->date('received_date')->nullable();
-            $table->boolean('is_permanent')->default('0')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->boolean('receives_bonus')->default('0');
+            $table->double('bonuses_amount')->nullable();
+            $table->date('bonus_date')->nullable();
+            $table->boolean('is_permanent')->default('0');
             $table->timestamps();
         });
     }

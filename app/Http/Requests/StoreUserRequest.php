@@ -25,7 +25,7 @@ class StoreUserRequest extends FormRequest
          'name' => 'required|string|max:255',
          'email' => 'required|email|unique:users,email',
          'phone_number' => 'required|string|max:15',
-         'salary_type' => 'nullable|in:fixed,irregular',
+         'role' => 'nullable|in:fixed_income, irregular_income',
          'user_id' => 'nullable|exists:users,id',
          'job_sector' => 'required|string',
          'job_title' => 'nullable|string',

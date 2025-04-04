@@ -22,7 +22,7 @@ class ExpenseController extends Controller
     $validatedData = $request->validate([
         'category' => 'required|string|max:255',
         'expenses_name' => 'nullable|string|max:255',
-        'Deadline' => 'nullable|date',
+        'deadline' => 'nullable|date',
         'expenses_amount' => 'required|numeric|min:0.01',
     ]);
 
@@ -31,7 +31,7 @@ class ExpenseController extends Controller
 
         $expense = $user->expenses()->create([
             'category' => $validatedData['category'],
-            'Deadline' => $validatedData['Deadline'] ?? null,
+            'deadline' => $validatedData['deadline'] ?? null,
             'expenses_name' => $validatedData['expenses_name'] ?? null,
             'expenses_amount' => $validatedData['expenses_amount'],
         ]);
@@ -39,7 +39,7 @@ class ExpenseController extends Controller
         // حساب مجموع المصاريف الجديدة
         $newTotal = $user->expenses()->sum('expenses_amount');
 
-        // تحديث جميع السجلات بالقيمة الجديدة
+        // تحديث القيمة الجديدة
         $user->expenses()->update(['expenses_total' => $newTotal]);
 
         // التحقق مما إذا كان هناك حد للنفقات
@@ -75,127 +75,54 @@ class ExpenseController extends Controller
 
 
 
-     /**
-     * Get subcategories for a specific category
-     */
-    public function getSubcategories($category)
+   public function update(Request $request, $id)
     {
-        if (!array_key_exists($category, $this->Subcategories)) {
+        $user = Auth::user();
+
+        $expense = Expense::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$expense) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid category'
+                'message' => 'Expense not found or unauthorized'
             ], 404);
         }
 
+        $validatedData = $request->validate([
+            'category' => 'nullable|string|in:need,want,primary_bill,tax',
+            'expenses_name' => 'nullable|string|max:255',
+            'expenses_amount' => 'nullable|numeric|min:0.01',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $expense->update($validatedData);
+
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'predefined' => $this->Subcategories[$category],
-                'allow_custom' => true
-            ]
-        ]);
+            'message' => 'Expense updated successfully',
+            'data' => $expense
+        ], 200);
     }
-
-
-     /**
-     * to calculate a user's net account amount (total income minus total expenses
-     */
-  public function getNetBalance()
-    {
-        $user = Auth::user();
-        try {
-            // Calculate total income
-            $totalIncome = $user->jobs()->sum('salary_amount');
-            // Calculate total expenses
-            $totalExpenses = $user->expenses()->sum('expenses_amount');
-
-            // Calculate net balance
-            $netBalance = $totalIncome - $totalExpenses;
-
-            return response()->json([
-                'status' => 'success',
-                'data' => [
-                    'total_income' => $totalIncome,
-                    'total_expenses' => $totalExpenses,
-                    'net_balance' => $netBalance,
-                    'currency' => $user->currency_preference ?? 'USD'
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to calculate balance',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-
 
     /**
- * Get all expenses in each category
- */
-    public function getNeeds(Request $request)
-    {
-         $user = Auth::user();
+     * Get all expenses in each category
+     */
 
-         $needs = $user->expenses()->where('category', 'need')->latest()
-         ->get();
+     public function getExpensesByCategory(Request $request, $category)
+     {
+        $user = Auth::user();
+        $expenses = $user->expenses()
+        ->where('category', $category)
+        ->latest()
+        ->get();
 
-         return response()->json([
-         'status' => 'success',
-         'count' => $needs->count(),
-         'data' => $needs
+
+        return response()->json([
+            'status' => 'success',
+            'count' => $expenses->count(),
+            'data' => $expenses
         ]);
     }
-
-    public function getWants(Request $request)
-{
-    $user = Auth::user();
-
-    // Base query for needs
-    $needs = $user->expenses()
-                ->where('category', 'want')
-                ->latest()
-                ->get();
-
-    return response()->json([
-        'status' => 'success',
-        'count' => $needs->count(),
-        'data' => $needs
-    ]);
-}
-
-    public function getBills(Request $request)
-    {
-         $user = Auth::user();
-
-         $needs = $user->expenses()->where('category', 'primary_bill')->latest()
-         ->get();
-
-         return response()->json([
-         'status' => 'success',
-         'count' => $needs->count(),
-         'data' => $needs
-        ]);
-    }
-
-    public function getTaxes(Request $request)
-    {
-         $user = Auth::user();
-
-         $needs = $user->expenses()->where('category', 'tax')->latest()
-         ->get();
-
-         return response()->json([
-         'status' => 'success',
-         'count' => $needs->count(),
-         'data' => $needs
-        ]);
-    }
-
-
 
     /**
      * Remove the specified resource from storage.
