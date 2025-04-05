@@ -64,6 +64,7 @@ class User extends Authenticatable
         ];
     }
 
+
      public function jobs()
     {
         return $this->hasMany(Job::class);
@@ -83,6 +84,8 @@ class User extends Authenticatable
 
     public function bonuses(): HasMany
     {
-        return $this->hasMany(Bonus::class, 'user_id')->where('role', 'fixed_income');
+        return $this->hasMany(Bonuses::class, 'user_id')->where('role', 'fixed_income');
     }
+
+
 }

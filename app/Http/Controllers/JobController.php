@@ -15,36 +15,48 @@ class JobController extends Controller
     /**
      * Store or update user's job information
      */
-  public function store(Request $request)
+ public function store(Request $request)
 {
     $user = Auth::user();
 
     try {
-        // Only validate if request has any job data
-        if ($request->hasAny(['salary_amount', 'job_sector', 'job_title', 'job_position'])) {
-            $validatedData = $request->validate([
-                'salary_amount' => 'required|numeric|min:0',
-                'job_sector' => 'required|in:Governmental,Private',
-                'job_title' => 'required|string|max:255',
-                'job_position' => 'nullable|string|max:255',
-            ]);
+        // Check for job-related input
+        $hasJobData = $request->hasAny([
+            'salary_amount', 'job_sector', 'job_title', 'job_position', 'payday'
+        ]);
 
-            // Create new job (don't update existing)
-            $job = $user->jobs()->create($validatedData);
-
+        if (!$hasJobData) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'New job added successfully',
-                'data' => $job
-            ], 201);
+                'message' => 'No job information provided',
+                'data' => null
+            ], 200);
         }
 
-        // No job data provided
+        // Validate incoming data
+        $validated = $request->validate([
+            'salary_amount' => 'required|numeric|min:0',
+            'job_sector' => 'required|in:Governmental,Private',
+            'job_title' => 'required|string|max:255',
+            'job_position' => 'nullable|string|max:255',
+            'payday' => 'nullable|date',
+        ]);
+
+       // Set payday if provided or default if not provided in request
+        $payday = $validated['payday'] ?? now()->startOfMonth();
+
+        // Remove payday from job data before saving to prevent accidental assignment to users table
+        $jobData = collect($validated)->except('payday')->toArray();
+
+        // Create job for the user
+        $job = $user->jobs()->create(array_merge($jobData, ['payday' => $payday]));
+
+
         return response()->json([
             'status' => 'success',
-            'message' => 'No job information provided',
-            'data' => null
-        ], 200);
+            'message' => 'New job added successfully',
+            'data' => $job
+        ], 201);
 
     } catch (ValidationException $e) {
         return response()->json([
@@ -62,4 +74,3 @@ class JobController extends Controller
     }
 }
 }
-

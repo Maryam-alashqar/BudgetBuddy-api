@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     /**
      *  Savings; add, show, edit and delete goals.
      */
-    Route::post('/goal', [SavingController::class, 'addGoals']);
+    Route::post('/add-goal', [SavingController::class, 'addGoals']);
     Route::delete('/goal/{id}', [SavingController::class, 'deleteSavingsById']);
 
     // financial report
@@ -73,6 +73,5 @@ Route::middleware('auth:sanctum')->group(function () {
     * Notification.
     */
     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
-
-
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });

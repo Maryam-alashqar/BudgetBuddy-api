@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->double('salary_amount');
+            $table->date('payday')->nullable();
             $table->enum('job_sector', ['Governmental','Private']);
             $table->string('job_title');
             $table->string('job_position')->nullable();

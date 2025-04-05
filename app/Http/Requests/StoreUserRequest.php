@@ -31,6 +31,7 @@ class StoreUserRequest extends FormRequest
          'job_title' => 'nullable|string',
          'job_position' => 'nullable|string',
          'salary_amount' => 'required|numeric',
+         'payday'=>'nullable|regex:/^\d{2}-\d{2}$/',
          'password' => 'required|string|min:8|confirmed',
 
         ];

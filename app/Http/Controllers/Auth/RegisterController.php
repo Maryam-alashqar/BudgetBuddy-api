@@ -26,10 +26,13 @@ class RegisterController extends Controller
             'role' => $validator['role'] ?? 'fixed_income',
             'password' => Hash::make($validator['password']),
         ]);
+    $payday = $validated['payday'] ?? now()->startOfMonth();
 
         $job = Job::create([
+            $payday = $validated['payday'] ?? now()->startOfMonth(),
             'user_id' => $user->id,
             'salary_amount' => $validator['salary_amount'],
+            'payday' => $validator['payday'], // Insert payday into the jobs table
             'job_sector' => $validator['job_sector'],
             'job_title' => $validator['job_title'],
             'job_position' => $validator['job_position'],

@@ -15,56 +15,34 @@ class ExpenseController extends Controller
     /**
      * Store a new expense
      */
-   public function store(Request $request)
+ public function store(Request $request)
 {
     $user = Auth::user();
 
-    $validatedData = $request->validate([
+    $validated = $request->validate([
         'category' => 'required|string|max:255',
         'expenses_name' => 'nullable|string|max:255',
         'deadline' => 'nullable|date',
         'expenses_amount' => 'required|numeric|min:0.01',
     ]);
 
-    // تنفيذ عملية ضمن المعاملة لضمان تناسق البيانات
-    DB::transaction(function () use ($user, $validatedData) {
+    DB::transaction(function () use ($user, $validated) {
 
+        // Create expense with mass assignment
         $expense = $user->expenses()->create([
-            'category' => $validatedData['category'],
-            'deadline' => $validatedData['deadline'] ?? null,
-            'expenses_name' => $validatedData['expenses_name'] ?? null,
-            'expenses_amount' => $validatedData['expenses_amount'],
+            'category' => $validated['category'],
+            'deadline' => $validated['deadline'] ?? null,
+            'expenses_name' => $validated['expenses_name'] ?? null,
+            'expenses_amount' => $validated['expenses_amount'],
         ]);
 
-        // حساب مجموع المصاريف الجديدة
+        // Recalculate total and update all rows (if you're updating a summary field)
         $newTotal = $user->expenses()->sum('expenses_amount');
 
-        // تحديث القيمة الجديدة
         $user->expenses()->update(['expenses_total' => $newTotal]);
 
-        // التحقق مما إذا كان هناك حد للنفقات
-        if ($user->expense_limit) {
-            $percentage = ($newTotal / $user->expense_limit) * 100;
-
-            // التحقق مما إذا كان قد تجاوز 80%
-            if ($percentage >= 80) {
-                $alreadyNotified = Notification::where('user_id', $user->id)
-                    ->where('type', 'expense_limit')
-                    ->where('created_at', '>=', now()->subDay())
-                    ->exists();
-
-                if (!$alreadyNotified) {
-                    Notification::create([
-                        'user_id' => $user->id,
-                        'type' => 'expense_limit',
-                        'message' => "Your expenses have reached {$percentage}% of your limit!"
-                    ]);
-
-                    // إرسال إشعار دفع (إن كان مفعلاً)
-                    $user->notify(new ExpenseLimitReached($percentage));
-                }
-            }
-        }
+        // Expense limit reached notification
+        $this->notifyIfLimitReached($user, $newTotal);
     });
 
     return response()->json([
@@ -73,6 +51,29 @@ class ExpenseController extends Controller
     ], 201);
 }
 
+private function notifyIfLimitReached($user, $total)
+{
+    if (!$user->expense_limit) return;
+
+    $percentage = ($total / $user->expense_limit) * 100;
+
+    if ($percentage >= 80) {
+        $alreadyNotified = Notification::where('user_id', $user->id)
+            ->where('type', 'expense_limit')
+            ->where('created_at', '>=', now()->subDay())
+            ->exists();
+
+        if (!$alreadyNotified) {
+            Notification::create([
+                'user_id' => $user->id,
+                'type' => 'expense_limit',
+                'message' => "Your expenses have reached {$percentage}% of your limit!"
+            ]);
+
+            $user->notify(new ExpenseLimitReached($percentage));
+        }
+    }
+}
 
 
    public function update(Request $request, $id)

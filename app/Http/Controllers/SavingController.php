@@ -16,18 +16,19 @@ class SavingController extends Controller
      */
     public function addGoals(Request $request)
     {
+        $request->merge(['user_id' => auth()->id()]); // Add user_id to the request
+
 
         $request->validate([
-        'user_id' => 'required|exists:users,id',
         'saving_goal' => 'required|string|max:255|',
         'start_date' => 'nullable|date',
         'end_date' => 'nullable|date',
         'saving_amount' => 'required|numeric|min:0',
         'note' => 'nullable|',
-        'saving_total' => 'required|numeric|min:0',
     ]);
 
-    Saving::create($request->all());
+     Saving::create($request->all());
+
 
     return response()->json(['message' => 'Saving goal added successfully!']);
     }

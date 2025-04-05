@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Bonus;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Bonuses;
 use App\Models\User;
 
 class BonusController extends Controller
@@ -35,9 +36,9 @@ class BonusController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+
             'amount' => 'required|numeric|min:0',
-            'bonus_date' => 'required|date',
+           'bonus_date' => 'required|regex:/^\d{2}-\d{2}$/',
             'is_permanent' => 'boolean'
         ]);
 
@@ -47,13 +48,13 @@ class BonusController extends Controller
             return response()->json(['error' => 'User is not a fixed income user'], 403);
         }
 
-        $bonus = Bonus::create($request->all());
+        $bonus = Bonuses::create($request->all());
 
         return response()->json(['message' => 'Bonus added successfully', 'bonus' => $bonus]);
     }
     public function index()
     {
-        $bonuses = Bonus::whereHas('user', function ($query) {
+        $bonuses = Bonuses::whereHas('user', function ($query) {
             $query->where('role', 'fixed_income');
         })->get();
 

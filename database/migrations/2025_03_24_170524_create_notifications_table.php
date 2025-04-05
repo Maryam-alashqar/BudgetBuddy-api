@@ -17,7 +17,7 @@ return new class extends Migration
         $table->string('title');
         $table->text('message');
         $table->enum('type', ['reminder', 'alert', 'update']);
-        $table->boolean('read')->default(false);
+        $table->boolean('read')->default(0);
         $table->json('data')->nullable();
         $table->timestamps();
     });
