@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
      *  Savings; add, show, edit and delete goals.
      */
     Route::post('/add-goal', [SavingController::class, 'addGoals']);
+    Route::get('/get-goals', [SavingController::class, 'getGoals']);
     Route::delete('/goal/{id}', [SavingController::class, 'deleteSavingsById']);
 
     // financial report

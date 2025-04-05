@@ -39,7 +39,13 @@ class SavingController extends Controller
 
     public function getGoals()
     {
-        //
+        $user = Auth::user();
+        $savings = $user->savings()->latest()->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $savings
+        ]);
     }
 
 

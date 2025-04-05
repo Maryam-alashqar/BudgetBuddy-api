@@ -69,22 +69,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(Job::class);
     }
+    //
       public function expenses()
     {
         return $this->hasMany(Expense::class);
     }
+    //
     public function savings()
     {
         return $this->hasMany(Saving::class);
     }
+    //
        public function notifications()
     {
         return $this->hasMany(Notification::class);
     }
-
+    //
     public function bonuses(): HasMany
     {
-        return $this->hasMany(Bonuses::class, 'user_id')->where('role', 'fixed_income');
+        return $this->hasMany(Bonuses::class, 'user_id')
+        ->where('role', 'fixed_income');
     }
 
 
