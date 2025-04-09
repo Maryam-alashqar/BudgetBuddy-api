@@ -91,5 +91,8 @@ class User extends Authenticatable
         ->where('role', 'fixed_income');
     }
 
-
+  public function budget()
+{
+    return $this->hasOne(Budget::class);
+}
 }

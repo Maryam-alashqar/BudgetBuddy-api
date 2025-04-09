@@ -13,6 +13,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\BudgetController;
 
 
 
@@ -40,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/jobs', [JobController::class, 'store']);
     // Net balance
     Route::get('/account/balance', [HomeController::class, 'getNetBalance']);
+    Route::post('/set-budget', [BudgetController::class, 'setBudget']);
 
 
     /**
@@ -76,3 +79,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
+
+// Privacy policy
+Route::get('/privacy-policy', function () {
+    return response()->json([
+        'title' => 'Privacy Policy for BudgetBuddy V. 1.00',
+        'content' => 'We respect your privacy. This Privacy Policy explains how we collect,
+        use, and protect user data in the BudgetBuddy API.
+        By using our services, you agree to the terms outlined below.
+        1. Information We Collect:
+            - User Identification (Name, Email)
+            - Transaction Details
+            - Device and Usage Data
+        2. Usage:
+            - To provide budgeting notifications and salary reminders
+            - To improve API performance and reliability
+        3. Data Security:
+            - All data is encrypted and stored securely
+            - API requests are authenticated using tokens
+        4. Data Sharing:
+            - We do not share user data with third parties
+        5. User Rights:
+            - Users can request to view, export, or delete their data
+        6. Policy Updates:
+            - We will notify users of any changes via app alerts or documentation updates.
+
+        For any questions, contact us at: support@budgetbuddyapi.com'
+    ]);
+});
+Route::post('/contact-us', [ContactUsController::class, 'send']);

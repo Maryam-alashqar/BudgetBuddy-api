@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Job;
 use App\Models\Expense;
+use App\Models\Budget;
 
 class ExpenseController extends Controller
 {
@@ -19,29 +20,61 @@ class ExpenseController extends Controller
 {
     $user = Auth::user();
 
+    // Validate the expense input
     $validated = $request->validate([
-        'category' => 'required|string|max:255',
+        'category' => 'required|in:need,want,primary_bill,loan,tax',
         'expenses_name' => 'nullable|string|max:255',
         'deadline' => 'nullable|date',
         'expenses_amount' => 'required|numeric|min:0.01',
     ]);
 
-    DB::transaction(function () use ($user, $validated) {
+    $category = $validated['category'];
+    $amount = $validated['expenses_amount'];
 
-        // Create expense with mass assignment
-        $expense = $user->expenses()->create([
+    $totalIncome = $user->jobs()->sum('salary_amount');
+
+    if (in_array($category, ['need', 'want'])) {
+        // Fetch user's budget or fall back to default percentages
+        $budget = $user->budget;
+
+        // If no budget is set, use 50/30/20 rule
+        $needsPercentage = $budget->needs_percentage ?? 50;
+        $wantsPercentage = $budget->wants_percentage ?? 30;
+
+        $needsAmount = $budget->needs_amount ?? ($totalIncome * ($needsPercentage / 100));
+        $wantsAmount = $budget->wants_amount ?? ($totalIncome * ($wantsPercentage / 100));
+
+        // Determine which category is being spent from
+        $used = $user->expenses()->where('category', $category)->sum('expenses_amount');
+
+        $limit = $category === 'need' ? $needsAmount : $wantsAmount;
+        $remaining = $limit - $used;
+
+        if ($totalIncome <= 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please set your salary first.'
+            ], 400);
+        }
+
+        if ($remaining < $amount) {
+            return response()->json([
+                'status' => 'error',
+                'message' => ucfirst($category) . ' budget limit exceeded. Remaining: ' . number_format($remaining, 2)
+            ], 422);
+        }
+    }
+
+    // Save the expense
+    DB::transaction(function () use ($user, $validated) {
+        $user->expenses()->create([
             'category' => $validated['category'],
             'deadline' => $validated['deadline'] ?? null,
             'expenses_name' => $validated['expenses_name'] ?? null,
             'expenses_amount' => $validated['expenses_amount'],
         ]);
 
-        // Recalculate total and update all rows (if you're updating a summary field)
         $newTotal = $user->expenses()->sum('expenses_amount');
-
-        $user->expenses()->update(['expenses_total' => $newTotal]);
-
-        // Expense limit reached notification
         $this->notifyIfLimitReached($user, $newTotal);
     });
 
@@ -50,6 +83,10 @@ class ExpenseController extends Controller
         'message' => 'Expense added successfully'
     ], 201);
 }
+
+
+
+
 
 private function notifyIfLimitReached($user, $total)
 {
