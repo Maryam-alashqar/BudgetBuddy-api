@@ -20,4 +20,6 @@ use HasFactory;
     {
         return $this->belongsTo(User::class)->where('role', 'fixed_income');
     }
+
+
 }

@@ -26,13 +26,11 @@ class ResetPasswordController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'otp' => 'required|digits:6',
+            'otp' => 'required|digits:4',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $user = User::where('email', $request->email)
-                    ->where('otp', $request->otp)
-                    ->first();
+        $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if (!$user) {
             return response()->json(['error' => 'Invalid OTP or email'], 400);

@@ -55,7 +55,11 @@ class JobController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'New job added successfully',
-            'data' => $job
+            'salary_amount' => $job->salary_amount,
+        'job_sector' => $job->job_sector,
+        'job_title' => $job->job_title,
+        'job_position' => $job->job_position,
+        'payday' => $job->payday,
         ], 201);
 
     } catch (ValidationException $e) {

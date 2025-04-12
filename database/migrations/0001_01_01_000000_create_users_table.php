@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('role', ['fixed_income', 'irregular_income'])->default('fixed_income');
-            $table->string('phone_number',15)->unique()->nullable();
+            $table->string('phone_number',15)->nullable();
             $table->string('password');
             $table->string('otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();

@@ -16,13 +16,13 @@ class ExpenseController extends Controller
     /**
      * Store a new expense
      */
- public function store(Request $request)
+public function store(Request $request)
 {
     $user = Auth::user();
 
     // Validate the expense input
     $validated = $request->validate([
-        'category' => 'required|in:need,want,primary_bill,loan,tax',
+        'category' => 'required|in:need,want,primary_bill,loans,tax',
         'expenses_name' => 'nullable|string|max:255',
         'deadline' => 'nullable|date',
         'expenses_amount' => 'required|numeric|min:0.01',
@@ -32,19 +32,32 @@ class ExpenseController extends Controller
     $amount = $validated['expenses_amount'];
 
     $totalIncome = $user->jobs()->sum('salary_amount');
+    $totalExpenses = $user->expenses()->sum('expenses_amount');
+
+    // Check if total expenses already equal the salary
+    if ($totalExpenses >= $totalIncome) {
+        return response()->json([
+            'status' => 'error',
+            'message' => "You've spent all your money!!"
+        ], 422);
+    }
+    // Additional check to prevent adding an expense that would exceed the salary
+    if (($totalExpenses + $amount) > $totalIncome) {
+        return response()->json([
+            'status' => 'error',
+            'message' => "This expense will exceed your total salary!"
+        ], 422);
+    }
 
     if (in_array($category, ['need', 'want'])) {
-        // Fetch user's budget or fall back to default percentages
         $budget = $user->budget;
 
-        // If no budget is set, use 50/30/20 rule
         $needsPercentage = $budget->needs_percentage ?? 50;
         $wantsPercentage = $budget->wants_percentage ?? 30;
 
         $needsAmount = $budget->needs_amount ?? ($totalIncome * ($needsPercentage / 100));
         $wantsAmount = $budget->wants_amount ?? ($totalIncome * ($wantsPercentage / 100));
 
-        // Determine which category is being spent from
         $used = $user->expenses()->where('category', $category)->sum('expenses_amount');
 
         $limit = $category === 'need' ? $needsAmount : $wantsAmount;
@@ -83,6 +96,7 @@ class ExpenseController extends Controller
         'message' => 'Expense added successfully'
     ], 201);
 }
+
 
 
 
@@ -127,7 +141,7 @@ private function notifyIfLimitReached($user, $total)
         }
 
         $validatedData = $request->validate([
-            'category' => 'nullable|string|in:need,want,primary_bill,tax',
+            'category' => 'nullable|string|in:need,want,primary_bill,tax,loan',
             'expenses_name' => 'nullable|string|max:255',
             'expenses_amount' => 'nullable|numeric|min:0.01',
             'deadline' => 'nullable|date',
@@ -168,14 +182,19 @@ private function notifyIfLimitReached($user, $total)
 
      protected function deleteExpenseById($expenseId)
     {
-        $expense = Expense::find($expenseId);
 
+         $user = Auth::user();
+       // Find the expense by its ID
+       $expense = Expense::where('id', $expenseId)->first();
+
+       // If the expense doesn't exist or doesn't belong to the authenticated user
         if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
+        return response()->json(['message' => 'Expense not found or unauthorized'], 404);
         }
 
-        $expense->delete();
+        // Delete the expense
+       $expense->delete();
 
         return response()->json(['message' => 'Expense deleted successfully'], 200);
-    }
+     }
 }

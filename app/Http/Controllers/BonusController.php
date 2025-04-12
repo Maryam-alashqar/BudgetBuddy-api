@@ -11,7 +11,8 @@ class BonusController extends Controller
 {
 
     public function updateBonusPreference(Request $request)
-    {
+    {    $user = Auth::user();
+
         $request->validate([
             'receives_bonus'=>'required|boolean',
 
@@ -27,38 +28,38 @@ class BonusController extends Controller
         ]);
 
         return response()->json([
-        'message' => 'Bonud preference updated successfully',
-        'user' => $user,
+        'message' => 'Bonus preference updated successfully',
+
         ]);
 
     }
      // only for fixed_Income users
     public function store(Request $request)
-    {
-        $request->validate([
+{
+    $request->validate([
+        'amount' => 'required|numeric|min:0',
+        'bonus_date' => 'required|date',
+        'is_permanent' => 'nullable|boolean'
+    ]);
 
-            'amount' => 'required|numeric|min:0',
-           'bonus_date' => 'required|regex:/^\d{2}-\d{2}$/',
-            'is_permanent' => 'boolean'
-        ]);
+    // Find 'fixed_income' user
+    $user = User::where('id', $request->user_id)->where('role', 'fixed_income')->first();
 
-        $user = User::where('id', $request->user_id)->where('role', 'fixed_income')->first();
-
-        if (!$user) {
-            return response()->json(['error' => 'User is not a fixed income user'], 403);
-        }
-
-        $bonus = Bonuses::create($request->all());
-
-        return response()->json(['message' => 'Bonus added successfully', 'bonus' => $bonus]);
+    // If user doesn't exist or isn't fixed_income.
+    if (!$user) {
+        return response()->json(['error' => 'User not found or not a fixed income user'], 403);
     }
-    public function index()
-    {
-        $bonuses = Bonuses::whereHas('user', function ($query) {
-            $query->where('role', 'fixed_income');
-        })->get();
 
-        return response()->json(['bonuses' => $bonuses]);
-    }
+    // Create the bonus and explicitly set the user_id
+    $bonus = Bonuses::create([
+        'amount' => $request->amount,
+        'bonus_date' => $request->bonus_date,
+        'is_permanent' => $request->is_permanent,
+        'user_id' => $user->id,  // Explicitly set the user_id
+    ]);
+
+    return response()->json(['message' => 'Bonus added successfully', 'bonus' => $bonus]);
+}
+
 
 }

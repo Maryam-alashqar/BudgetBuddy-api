@@ -14,35 +14,31 @@ use App\Models\Job;
 class RegisterController extends Controller
 {
     //
-    public function register(StoreUserRequest $request): JsonResponse
-    {
+public function register(StoreUserRequest $request): JsonResponse
+{
+    $validated = $request->validated();
 
-        $validator = $request->validated();
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'phone_number' => $validated['phone_number'],
+        'role' => $validated['role'] ?? 'fixed_income,irregular_income',
+        'password' => Hash::make($validated['password']),
+    ]);
 
-        $user = User::create([
-            'name' => $validator['name'],
-            'email' => $validator['email'],
-            'phone_number' => $validator['phone_number'],
-            'role' => $validator['role'] ?? 'fixed_income',
-            'password' => Hash::make($validator['password']),
-        ]);
     $payday = $validated['payday'] ?? now()->startOfMonth();
 
-        $job = Job::create([
-            $payday = $validated['payday'] ?? now()->startOfMonth(),
-            'user_id' => $user->id,
-            'salary_amount' => $validator['salary_amount'],
-            'payday' => $validator['payday'], // Insert payday into the jobs table
-            'job_sector' => $validator['job_sector'],
-            'job_title' => $validator['job_title'],
-            'job_position' => $validator['job_position'],
-        ]);
+    $job = Job::create([
+        'user_id' => $user->id,
+        'salary_amount' => $validated['salary_amount'],
+        'payday' => $payday,
+        'job_sector' => $validated['job_sector'],
+        'job_title' => $validated['job_title'],
+        'job_position' => $validated['job_position'],
+    ]);
 
-        return response()->json([
-            'message' => 'User registered successfully!',
-            'user' => $user,
-            'job' => $job,
-        ], 201);
-
-    }
+    return response()->json([
+        'message' => "{$user->email} registered successfully!",
+    ], 201);
+}
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -52,8 +53,9 @@ Route::middleware('auth:sanctum')->group(function () {
     */
     Route::post('/expenses', [ExpenseController::class, 'store']);
     Route::get('/expenses/{category}', [ExpenseController::class, 'getExpensesByCategory']);
-    Route::delete('/expenses/{id}', [ExpenseController::class, 'deleteExpenseById']);
+    Route::delete('/expenses/{expenseId}', [ExpenseController::class, 'deleteExpenseById']);
     Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
+ 
 
     /**
      *  Savings; add, show, edit and delete goals.

@@ -45,7 +45,7 @@ class LoginController extends Controller
             'status' => true,
             'message' => 'Login successful',
             'data' => [
-                'user' => $user,
+                'user' => " Welcome {$user->name} to BudgetBuddy!",
                 'token' => $token
             ]
         ]);
