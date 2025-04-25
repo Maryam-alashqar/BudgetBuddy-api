@@ -39,13 +39,17 @@ Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']
  */
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile/{user}', [ProfileController::class, 'show']);
-    Route::put('/profile/{user}', [ProfileController::class, 'update']);
+
     // Add Other Job
-    Route::post('/jobs', [JobController::class, 'store']);
+    Route::post('/fixed-jobs', [JobController::class, 'storeFixedJob']);
+    Route::post('/irregular-jobs', [JobController::class, 'storeIrregularJob']);
+    Route::post('/update-fixed-jobs/{id}', [JobController::class, 'updateFixedJob']);
+    Route::post('/update-irregular-jobs/{id}', [JobController::class, 'updateIrregularJob']);
     // Net balance
     Route::get('/account/balance', [HomeController::class, 'getNetBalance']);
     Route::post('/set-budget', [BudgetController::class, 'setBudget']);
     Route::get('/emergency-fund', [EmergencyFundController::class, 'show']);
+
     /**
     *   Add expenses, Predefined subcategories or manually.
     *   Show each expenses Category.

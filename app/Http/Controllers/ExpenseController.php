@@ -73,7 +73,9 @@ public function store(Request $request)
         if ($remaining < $amount) {
             return response()->json([
                 'status' => 'error',
-                'message' => ucfirst($category) . ' budget limit exceeded. Remaining: ' . number_format($remaining, 2)
+                'message' => ucfirst($category) .
+                ' budget limit exceeded. Remaining: '
+                . number_format($remaining, 2)
             ], 422);
         }
     }
@@ -187,9 +189,9 @@ private function notifyIfLimitReached($user, $total)
        // Find the expense by its ID
        $expense = Expense::where('id', $expenseId)->first();
 
-       // If the expense doesn't exist or doesn't belong to the authenticated user
+       // If the expense doesn't exist or doesn't belong to the user
         if (!$expense) {
-        return response()->json(['message' => 'Expense not found or unauthorized'], 404);
+        return response()->json(['message' => 'Expense not found'], 404);
         }
 
         // Delete the expense

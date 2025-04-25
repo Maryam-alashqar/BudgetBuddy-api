@@ -41,7 +41,6 @@ class FinancialController extends Controller
 
     public function getExpensesPercentage()
     {
-        // استرجاع إجمالي المصروفات
         $totalExpenses = Expense::sum('expenses_amount');
 
         // جلب المصروفات مجمّعة حسب الفئة
