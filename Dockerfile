@@ -34,7 +34,7 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY ./supervisord.conf /etc/supervisord.conf
 
 # تحديد المنفذ المكشوف
-EXPOSE 80
+EXPOSE 9000
 
 # تشغيل الخدمات عند بدء التشغيل
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
