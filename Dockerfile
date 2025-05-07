@@ -37,4 +37,4 @@ COPY ./supervisord.conf /etc/supervisord.conf
 EXPOSE 80
 
 # تشغيل الخدمات عند بدء التشغيل
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
