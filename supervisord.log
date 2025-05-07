@@ -1,0 +1,30 @@
+2025-05-07 12:47:36,537 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-05-07 12:47:36,557 INFO supervisord started with pid 1
+2025-05-07 12:47:37,564 INFO spawned: 'laravel-worker' with pid 7
+2025-05-07 12:47:38,566 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:47:47,432 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:47:48,436 INFO spawned: 'laravel-worker' with pid 10
+2025-05-07 12:47:49,439 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:47:55,671 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:47:56,674 INFO spawned: 'laravel-worker' with pid 13
+2025-05-07 12:47:57,676 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:04,564 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:05,567 INFO spawned: 'laravel-worker' with pid 16
+2025-05-07 12:48:06,569 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:11,809 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:12,813 INFO spawned: 'laravel-worker' with pid 19
+2025-05-07 12:48:13,816 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:19,179 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:20,183 INFO spawned: 'laravel-worker' with pid 22
+2025-05-07 12:48:21,185 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:25,844 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:26,848 INFO spawned: 'laravel-worker' with pid 25
+2025-05-07 12:48:27,850 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:32,033 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:33,037 INFO spawned: 'laravel-worker' with pid 28
+2025-05-07 12:48:34,040 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:39,247 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:40,251 INFO spawned: 'laravel-worker' with pid 31
+2025-05-07 12:48:41,253 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 12:48:47,355 WARN exited: laravel-worker (exit status 1; not expected)
+2025-05-07 12:48:48,358 INFO spawned: 'laravel-worker' with pid 34
