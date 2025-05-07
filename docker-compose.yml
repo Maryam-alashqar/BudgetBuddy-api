@@ -10,6 +10,7 @@ services:
       - mysql
     networks:
       - app-network
+    restart: always
 
   nginx:
     image: nginx:latest
@@ -22,6 +23,7 @@ services:
       - app
     networks:
       - app-network
+    restart: always
 
   mysql:
     image: mysql:5.7
@@ -36,6 +38,7 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - app-network
+    restart: always
 
 volumes:
   mysql-data:
