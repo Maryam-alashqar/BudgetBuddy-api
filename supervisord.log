@@ -864,3 +864,29 @@
 2025-05-07 17:01:57,145 INFO supervisord started with pid 1
 2025-05-07 17:01:58,153 INFO spawned: 'laravel-worker' with pid 7
 2025-05-07 17:01:59,161 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 17:12:11,038 WARN received SIGQUIT indicating exit request
+2025-05-07 17:12:11,040 INFO waiting for laravel-worker to die
+2025-05-07 17:12:14,048 INFO waiting for laravel-worker to die
+2025-05-07 17:12:17,055 INFO waiting for laravel-worker to die
+2025-05-07 17:12:20,060 INFO waiting for laravel-worker to die
+2025-05-07 17:12:22,831 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-05-07 17:12:22,841 INFO supervisord started with pid 1
+2025-05-07 17:12:23,848 INFO spawned: 'laravel-worker' with pid 7
+2025-05-07 17:12:24,859 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 17:12:58,299 INFO exited: laravel-worker (exit status 0; expected)
+2025-05-07 17:12:59,308 INFO spawned: 'laravel-worker' with pid 12
+2025-05-07 17:13:00,314 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 17:13:30,171 INFO exited: laravel-worker (exit status 0; expected)
+2025-05-07 17:13:31,179 INFO spawned: 'laravel-worker' with pid 17
+2025-05-07 17:13:32,187 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 17:18:40,630 WARN received SIGQUIT indicating exit request
+2025-05-07 17:18:40,633 INFO waiting for laravel-worker to die
+2025-05-07 17:18:43,636 INFO waiting for laravel-worker to die
+2025-05-07 17:18:43,792 INFO stopped: laravel-worker (exit status 0)
+2025-05-07 17:18:46,308 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-05-07 17:18:46,335 INFO supervisord started with pid 1
+2025-05-07 17:18:47,341 INFO spawned: 'laravel-worker' with pid 7
+2025-05-07 17:18:48,346 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-07 17:22:47,685 WARN received SIGQUIT indicating exit request
+2025-05-07 17:22:47,687 INFO waiting for laravel-worker to die
+2025-05-07 17:22:48,419 INFO stopped: laravel-worker (exit status 0)
