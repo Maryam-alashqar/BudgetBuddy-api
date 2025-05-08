@@ -1045,3 +1045,11 @@
 2025-05-08 14:12:40,945 INFO stopped: php-fpm (exit status 0)
 2025-05-08 14:12:41,002 INFO stopped: nginx (exit status 0)
 2025-05-08 14:12:42,083 INFO stopped: laravel-worker (exit status 0)
+2025-05-08 14:12:51,453 INFO Set uid to user 0 succeeded
+2025-05-08 14:12:51,465 INFO supervisord started with pid 1
+2025-05-08 14:12:52,474 INFO spawned: 'laravel-worker' with pid 7
+2025-05-08 14:12:52,487 INFO spawned: 'nginx' with pid 8
+2025-05-08 14:12:52,495 INFO spawned: 'php-fpm' with pid 9
+2025-05-08 14:12:53,693 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-08 14:12:53,695 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-08 14:12:53,696 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
