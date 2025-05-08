@@ -1053,3 +1053,9 @@
 2025-05-08 14:12:53,693 INFO success: laravel-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-05-08 14:12:53,695 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-05-08 14:12:53,696 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-08 14:48:15,779 WARN received SIGQUIT indicating exit request
+2025-05-08 14:48:15,809 INFO waiting for laravel-worker, nginx, php-fpm to die
+2025-05-08 14:48:15,916 INFO stopped: php-fpm (exit status 0)
+2025-05-08 14:48:16,114 INFO stopped: nginx (exit status 0)
+2025-05-08 14:48:19,118 INFO waiting for laravel-worker to die
+2025-05-08 14:48:20,218 INFO stopped: laravel-worker (exit status 0)
