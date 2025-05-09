@@ -52,7 +52,7 @@ return [
             'lock_path' => storage_path('framework/cache/data'),
         ],
 
-        'memcached' => [
+        /* 'memcached' => [
             'driver' => 'memcached',
             'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),
             'sasl' => [
@@ -75,7 +75,7 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_CACHE_CONNECTION', 'cache'),
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
-        ],
+        ], */
 
         'dynamodb' => [
             'driver' => 'dynamodb',
