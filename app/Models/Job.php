@@ -29,10 +29,10 @@ class Job extends Model
 
     protected static function booted()
 {
-    static::creating(function ($user) {
+    static::creating(function ($job) {
         // If payday is not already set, set it to the first day of the current month
-        if (!$user->payday) {
-            $user->payday = Carbon::now()->startOfMonth(); // Sets the payday to the 1st of the current month
+        if (!$job->payday) {
+            $job->payday = Carbon::now()->startOfMonth(); // Sets the payday to the 1st of the current month
         }
     });
 }
