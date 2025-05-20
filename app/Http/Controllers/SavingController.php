@@ -18,20 +18,26 @@ class SavingController extends Controller
     {
         $request->merge(['user_id' => auth()->id()]); // Add user_id to the request
 
-
         $request->validate([
-        'saving_goal' => 'required|string|max:255|',
-        'start_date' => 'nullable|date',
-        'end_date' => 'nullable|date',
-        'saving_amount' => 'required|numeric|min:0',
-        'note' => 'nullable|',
-    ]);
+            'saving_goal' => 'required|string|max:255',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'saving_amount' => 'required|numeric|min:0',
+            'note' => 'nullable|string',
+            'user_id' => 'required|exists:users,id'
+        ]);
 
-     Saving::create($request->all());
+        $saving = Saving::create($request->only([
+            'saving_goal', 'start_date', 'end_date', 'saving_amount', 'note', 'user_id'
+        ]));
 
-
-    return response()->json(['message' => 'Saving goal added successfully!']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Saving goal added successfully!',
+            'data' => $saving
+        ]);
     }
+
 
     /**
      * Display a listing of the resource.
@@ -49,7 +55,33 @@ class SavingController extends Controller
     }
 
 
+    public function updateGoal(Request $request, $id)
+    {
+        $user = Auth::user();
 
+        $saving = Saving::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$saving) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Goal not found or unauthorized'
+            ], 404);
+        }
+
+        $validatedData = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'saving_amount' => 'required|numeric|min:0',
+        ]);
+
+        $saving->update($validatedData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Goal updated successfully',
+            'data' => $saving
+        ], 200);
+    }
 
      protected function deleteSavingsById($savingId)
     {
@@ -61,6 +93,8 @@ class SavingController extends Controller
 
         $saving->delete();
 
-        return response()->json(['message' => 'Goal deleted successfully'], 200);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Goal deleted successfully'], 200);
     }
 }

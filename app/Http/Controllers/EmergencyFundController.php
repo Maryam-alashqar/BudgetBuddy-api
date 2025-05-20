@@ -17,7 +17,7 @@ class EmergencyFundController extends Controller
         $amount = $totalIncome * $percentage;
 
         return response()->json([
-
+            'status' => 'success',
             'recommended_saving' => round($amount, 2),
             'note' => "Since your total income is $totalIncome.
              We advise you with a simple Emergency fund of $$amount. Ready to get started?"

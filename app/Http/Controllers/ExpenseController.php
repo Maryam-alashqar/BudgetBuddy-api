@@ -197,6 +197,8 @@ private function notifyIfLimitReached($user, $total)
         // Delete the expense
        $expense->delete();
 
-        return response()->json(['message' => 'Expense deleted successfully'], 200);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Expense deleted successfully'], 200);
      }
 }

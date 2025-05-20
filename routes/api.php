@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerifyOtpController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SavingController;
 use App\Http\Controllers\ProfileController;
@@ -25,7 +26,8 @@ use App\Http\Controllers\EmergencyFundController;
  */
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [LoginController::class, 'logout']);
+
+Route::middleware('auth:sanctum')->post('/verify', [VerifyOtpController::class, 'verify']);
 
 
 /**
@@ -66,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::post('/add-goal', [SavingController::class, 'addGoals']);
     Route::get('/get-goals', [SavingController::class, 'getGoals']);
+    Route::put('/update-goal/{id}', [SavingController::class, 'updateGoal']);
     Route::delete('/goal/{id}', [SavingController::class, 'deleteSavingsById']);
 
     // financial report
@@ -84,6 +87,10 @@ Route::middleware('auth:sanctum')->group(function () {
     */
     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+
+    //exist session
+    Route::post('/logout', [LoginController::class, 'logout']);
 });
 
 // Privacy policy
