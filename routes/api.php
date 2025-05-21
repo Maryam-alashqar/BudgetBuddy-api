@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->post('/verify', [VerifyOtpController::class, 
  */
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOTP']);
 Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
+Route::post('/verifyOTPForReset', [ResetPasswordController::class, 'verifyOTPForReset']);
 
 /**
  * Show, edit, Update profile.
